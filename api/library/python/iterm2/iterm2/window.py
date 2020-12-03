@@ -584,3 +584,49 @@ class Window:
                 response.invoke_function_response.error.error_reason))
         return json.loads(
             response.invoke_function_response.success.json_result)
+
+    async def async_get_isHotkeyWindow(self) -> bool:
+        """
+        Checks if the window is a hotkey window.
+
+        :returns: Whether the window is a hotkey window.
+
+        :throws: :class:`GetPropertyException` if something goes wrong.
+        """
+        response = await iterm2.rpc.async_get_property(
+            self.connection, "isHotkeyWindow", self.__window_id)
+        status = response.get_property_response.status
+        # pylint: disable=no-member
+        if status == iterm2.api_pb2.GetPropertyResponse.Status.Value("OK"):
+            return json.loads(response.get_property_response.json_value)
+        raise GetPropertyException(response.get_property_response.status)
+
+    async def async_get_hotkeyWindowProfile(self) -> str:
+        """
+        Checks if the window is a hotkey window.
+
+        :returns: Whether the window is a hotkey window.
+
+        :throws: :class:`GetPropertyException` if something goes wrong.
+        """
+        response = await iterm2.rpc.async_get_property(
+            self.connection, "hotkeyWindowProfile", self.__window_id)
+        status = response.get_property_response.status
+        # pylint: disable=no-member
+        if status == iterm2.api_pb2.GetPropertyResponse.Status.Value("OK"):
+            return json.loads(response.get_property_response.json_value)
+        raise GetPropertyException(response.get_property_response.status)
+
+    async def async_revealHotkeyWindow(self) -> None:
+        """
+        Reveal the hotkey window.
+
+        Should only be called if `self.isHotkeyWindow` is true
+
+        :throws: :class:`~iterm2.rpc.RPCException` if something goes wrong.
+        """
+        invocation = iterm2.util.invocation_string(
+            "iterm2.reveal_hotkey_window",
+            {})
+        await iterm2.rpc.async_invoke_method(
+            self.connection, self.window_id, invocation, -1)

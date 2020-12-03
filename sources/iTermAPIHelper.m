@@ -15,6 +15,7 @@
 #import "iTermColorPresets.h"
 #import "iTermController.h"
 #import "iTermDisclosableView.h"
+#import "iTermHotKeyController.h"
 #import "iTermLSOF.h"
 #import "iTermMalloc.h"
 #import "iTermObject.h"
@@ -2594,9 +2595,24 @@ static BOOL iTermAPIHelperLastApplescriptAuthRequiredSetting;
         return term.anyFullScreen ? @"true" : @"false";
     };
 
+    GetWindowPropertyBlock getIsHotkeyWindow = ^NSString * {
+        return term.isHotKeyWindow ? @"true" : @"false";
+    };
+
+    GetWindowPropertyBlock getHotkeyWindowProfile = ^NSString * {
+        if (term.isHotKeyWindow) {
+            NSString *profileName = [[[[iTermHotKeyController sharedInstance] profileHotKeyForWindowController:term] profile] objectForKey:KEY_NAME];
+            return [NSJSONSerialization it_jsonStringForObject:profileName];
+        } else {
+            return nil;
+        }
+    };
+
     NSDictionary<NSString *, GetWindowPropertyBlock> *handlers =
         @{ @"frame": getFrame,
-           @"fullscreen": getFullScreen };
+           @"fullscreen": getFullScreen,
+           @"isHotkeyWindow": getIsHotkeyWindow,
+           @"hotkeyWindowProfile": getHotkeyWindowProfile };
 
     GetWindowPropertyBlock block = handlers[name];
     if (block) {

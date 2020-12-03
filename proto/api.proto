@@ -116,6 +116,7 @@ message InvokeFunctionRequest {
   message Method {
     // The following methods are defined:
     // window.set_title(title: String)
+    // window.reveal_hotkey_window()
     // session.set_name(name: String)
     // session.run_tmux_command(command: String) throws  // Throws an exception if this is not a tmux session
     // session.set_status_bar_component_unread_count(identifier: String, count: Int)

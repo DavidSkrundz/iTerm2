@@ -10964,6 +10964,15 @@ backgroundColor:(NSColor *)backgroundColor {
                                                    target:self
                                                    action:@selector(setTitleWithCompletion:title:)];
         [_methods registerFunction:method namespace:@"iterm2"];
+
+        method = [[iTermBuiltInMethod alloc] initWithName:@"reveal_hotkey_window"
+                                            defaultValues:@{}
+                                                    types:@{}
+                                        optionalArguments:[NSSet set]
+                                                  context:iTermVariablesSuggestionContextSession
+                                                   target:self
+                                                   action:@selector(revealHotkeyWindowWithCompletion:)];
+        [_methods registerFunction:method namespace:@"iterm2"];
     }
     return _methods;
 }
@@ -10972,6 +10981,11 @@ backgroundColor:(NSColor *)backgroundColor {
                          title:(NSString *)title {
     [self.scope setValue:title.length ? title : nil
         forVariableNamed:iTermVariableKeyWindowTitleOverrideFormat];
+    completion(nil, nil);
+}
+
+- (void)revealHotkeyWindowWithCompletion:(void (^)(id, NSError *))completion {
+    [[[iTermHotKeyController sharedInstance] profileHotKeyForWindowController:self] revealForScripting];
     completion(nil, nil);
 }
 
